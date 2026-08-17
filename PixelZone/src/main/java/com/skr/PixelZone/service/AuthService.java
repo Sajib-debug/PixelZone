@@ -1,16 +1,21 @@
 package com.skr.PixelZone.service;
 
 import com.skr.PixelZone.dto.AuthResponse;
+import com.skr.PixelZone.dto.LoginRequest;
 import com.skr.PixelZone.dto.RegisterRequest;
 import com.skr.PixelZone.entity.RefreshToken;
 import com.skr.PixelZone.entity.User;
 import com.skr.PixelZone.exception.ResourceConflictException;
+import com.skr.PixelZone.exception.UnauthorizedException;
 import com.skr.PixelZone.repository.RefreshTokenRepository;
 import com.skr.PixelZone.repository.UserRepository;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
 
 @Service
 public class AuthService {
@@ -51,6 +56,41 @@ public class AuthService {
 
         userRepository.save(user);
         return buildAuthResponse(user);
+    }
+
+    @Transactional
+    public AuthResponse login(LoginRequest request){
+        String email = request.email().toLowerCase().trim();
+
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(email, request.password())
+        );
+
+        User user = userService.getByEmail(email);
+
+        refreshTokenRepository.deleteByUserId(user.getId());
+
+        return buildAuthResponse(user);
+    }
+
+    @Transactional
+    public AuthResponse refresh(String refreshTokenValue) {
+        RefreshToken refreshToken = refreshTokenRepository.findByToken(refreshTokenValue)
+                .orElseThrow(()-> new UnauthorizedException("Refresh token not found!"));
+
+        if(refreshToken.getExpiresAt().isBefore(Instant.now())) {
+            refreshTokenRepository.delete(refreshToken);
+            throw new UnauthorizedException("Refresh token expired!");
+        }
+
+        User user = refreshToken.getUser();
+        refreshTokenRepository.deleteByToken(refreshTokenValue);
+        return buildAuthResponse(user);
+    }
+
+    @Transactional
+    public void logout(String token) {
+        refreshTokenRepository.findByToken(token).ifPresent(refreshTokenRepository::delete);
     }
 
 

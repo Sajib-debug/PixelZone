@@ -6,6 +6,8 @@ import lombok.*;
 import java.time.Instant;
 import java.util.UUID;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 @Entity
 @Table(name = "users")
 @Getter
@@ -17,6 +19,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(columnDefinition = "BINARY(16)")
     private UUID id;
 
     @Column(nullable = false, unique = true, length = 50)
@@ -28,11 +31,7 @@ public class User {
     @Column(nullable = false, length = 150)
     private String passwordHash;
 
+    @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
-
-    @PrePersist
-    protected void prePersist() {
-        createdAt = Instant.now();
-    }
 }
