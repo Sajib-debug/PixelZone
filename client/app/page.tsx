@@ -1,9 +1,11 @@
-import { ModeToggle } from "@/components/ui/mode-toggle";
+import { AuthGuard } from "@/components/auth/auth-guard";
+import { redirect } from "next/navigation";
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen items-center justify-center">
-      <ModeToggle/>
-    </main>
+    <AuthGuard>
+      {/* Redirect authenticated users immediately to the photos application */}
+      {redirect("/photos")}
+    </AuthGuard>
   );
 }
