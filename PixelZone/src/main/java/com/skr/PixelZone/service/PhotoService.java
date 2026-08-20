@@ -10,12 +10,16 @@ import com.skr.PixelZone.entity.User;
 import com.skr.PixelZone.exception.BadRequestException;
 import com.skr.PixelZone.exception.ResourceNotFoundException;
 import com.skr.PixelZone.repository.PhotoRepository;
+import com.skr.PixelZone.repository.AlbumPhotoRepository;
+import com.skr.PixelZone.repository.AlbumRepository;
 import io.imagekit.models.files.FileUploadResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -25,6 +29,7 @@ import java.util.UUID;
 
 @Service
 public class PhotoService {
+    private static final Logger log = LoggerFactory.getLogger(PhotoService.class);
     private static final Set<String> ALLOWED_CONTENT_TYPES = Set.of(
             "image/jpeg",
             "image/png",
@@ -35,10 +40,14 @@ public class PhotoService {
     );
 
     private final PhotoRepository photoRepository;
+    private final AlbumPhotoRepository albumPhotoRepository;
+    private final AlbumRepository albumRepository;
     private final ImageKitService imageKitService;
 
-    public PhotoService(PhotoRepository photoRepository, ImageKitService imageKitService) {
+    public PhotoService(PhotoRepository photoRepository, AlbumPhotoRepository albumPhotoRepository, AlbumRepository albumRepository, ImageKitService imageKitService) {
         this.photoRepository = photoRepository;
+        this.albumPhotoRepository = albumPhotoRepository;
+        this.albumRepository = albumRepository;
         this.imageKitService = imageKitService;
     }
 
@@ -193,8 +202,14 @@ public class PhotoService {
             if(photo.getStatus() != PhotoStatus.TRASH) {
                 throw new BadRequestException("Only photos in trash can be deleted!");
             }
-            imageKitService.deleteFile(photo.getImageKitFileId());
+            albumRepository.clearCoverPhoto(photo.getId());
+            albumPhotoRepository.deleteByPhotoIds(List.of(photo.getId()));
             photoRepository.delete(photo);
+            try {
+                imageKitService.deleteFile(photo.getImageKitFileId());
+            } catch (RuntimeException ex) {
+                log.warn("Could not delete ImageKit file {} after removing photo {}", photo.getImageKitFileId(), photo.getId(), ex);
+            }
         }
     }
 

@@ -91,6 +91,17 @@ public class PhotoController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    @PostMapping("/photos/trash")
+    public ResponseEntity<Void> trashPhotos(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @Valid @RequestBody BulkPhotoActionRequest request
+    ) {
+        User user = userService.getByEmail(userDetails.getUsername());
+        photoService.movePhotosToTrash(user, request.photoIds());
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
 
     @PostMapping("/photos/restore")
     public ResponseEntity<Void> restorePhotos(

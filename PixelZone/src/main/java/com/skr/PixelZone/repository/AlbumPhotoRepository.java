@@ -5,6 +5,7 @@ import com.skr.PixelZone.entity.AlbumPhoto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.w3c.dom.stylesheets.LinkStyle;
@@ -32,6 +33,14 @@ public interface AlbumPhotoRepository extends JpaRepository<AlbumPhoto, UUID> {
     boolean existsByAlbumIdAndPhotoId(UUID albumId, UUID photoId);
 
     void deleteByAlbumIdAndPhotoId(UUID albumId, UUID photoId);
+
+        @Modifying(flushAutomatically = true, clearAutomatically = true)
+        @Query("delete from AlbumPhoto ap where ap.album.id = :albumId")
+        void deleteByAlbumId(@Param("albumId") UUID albumId);
+
+        @Modifying(flushAutomatically = true, clearAutomatically = true)
+        @Query("delete from AlbumPhoto ap where ap.photo.id in :photoIds")
+        void deleteByPhotoIds(@Param("photoIds") List<UUID> photoIds);
 
     @Query("""
             SELECT COALESCE(MAX(ap.sortOrder),0) From AlbumPhoto ap

@@ -79,7 +79,7 @@ public class AlbumService {
     public AlbumResponse updateAlbum(User user, UUID albumId, UpdateAlbumRequest request) {
         Album album = getOwnedAlbum(user, albumId);
 
-        if(request.title() != null && request.title().trim().isBlank()){
+        if(request.title() != null && !request.title().trim().isBlank()){
             album.setTitle(request.title().trim());
         }
 
@@ -103,6 +103,7 @@ public class AlbumService {
     @Transactional
     public void deleteAlbum(User user, UUID albumId) {
         Album album = getOwnedAlbum(user,albumId);
+        albumPhotoRepository.deleteByAlbumId(album.getId());
         albumRepository.delete(album);
     }
 
