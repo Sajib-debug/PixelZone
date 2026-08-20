@@ -34,12 +34,19 @@ export function PixelZoneLanding() {
     <main className="min-h-svh overflow-hidden bg-[#f8fbff] text-[#101b35]">
       <div className="relative isolate bg-[linear-gradient(rgba(16,38,75,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(16,38,75,0.035)_1px,transparent_1px)] bg-[size:32px_32px]">
 
+        <div className="pointer-events-none absolute right-6 top-24 hidden items-center gap-3 rounded-full border border-[#10264b]/10 bg-white/60 px-3 py-2 opacity-[0.34] shadow-sm backdrop-blur-[2px] sm:flex lg:right-12" aria-hidden="true">
+          <span className="flex size-8 items-center justify-center overflow-hidden rounded-lg bg-[#10264b] dark:bg-[#d8edf7]">
+            <Image src="/brand-mark.svg" alt="" width={36} height={36} className="size-full object-contain" />
+          </span>
+          <span className="text-xs font-bold tracking-[0.16em] text-[#10264b] dark:text-[#d8edf7]">PIXELZONE</span>
+        </div>
+
         <nav className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-5 lg:px-10" aria-label="Main navigation">
           <Link href="/" className="flex items-center gap-3" aria-label="PixelZone home">
-            <span className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl bg-[#10264b] shadow-[0_8px_24px_rgba(16,38,75,0.18)]">
-              <Image src="/logo.png" alt="PixelZone logo" width={44} height={44} className="h-full w-full scale-[2.2] object-contain" priority />
+            <span className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-xl shadow-[0_8px_24px_rgba(16,38,75,0.18)] sm:size-11">
+              <Image src="/brand-mark.svg" alt="PixelZone logo mark" width={44} height={44} className="size-full object-contain" priority />
             </span>
-            <span className="text-lg font-semibold tracking-[-0.03em]">PixelZone</span>
+            <span className="text-[17px] font-semibold tracking-[-0.025em] text-[#10264b]">PixelZone</span>
           </Link>
 
           <div className="flex items-center gap-2 sm:gap-5">
@@ -86,7 +93,7 @@ export function PixelZoneLanding() {
               <div className="flex items-center justify-between border-b border-[#e6edf4] pb-4">
                 <div className="flex items-center gap-2.5">
                   <span className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-md bg-[#10264b]">
-                    <Image src="/logo.png" alt="" width={32} height={32} className="h-full w-full scale-[2.2] object-contain" />
+                    <Image src="/brand-mark.svg" alt="" width={32} height={32} className="h-full w-full object-contain" />
                   </span>
                   <span className="text-sm font-semibold text-[#10264b]">My PixelZone</span>
                 </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { ChevronLeft, ChevronRight, Images, ListChecks, Plus, X, Trash2, AlertCircle } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, Images, ListChecks, Plus, X, Trash2, AlertCircle } from "lucide-react";
 
 import {
     Dialog,
@@ -27,7 +27,7 @@ const PAGE_SIZE = 24;
 
 export function AlbumDetailDialog({ album, open, onClose }: AlbumDetailDialogProps) {
     const [page, setPage] = useState(0);
-    const [selectedPhoto, setSelectedPhoto] = useState<PhotoResponse | null>(null);
+    const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
     const [addPhotosOpen, setAddPhotosOpen] = useState(false);
     const [selectionMode, setSelectionMode] = useState(false);
@@ -38,6 +38,7 @@ export function AlbumDetailDialog({ album, open, onClose }: AlbumDetailDialogPro
     const photos = data?.content ?? [];
     const totalPages = data?.totalPages ?? 0;
     const totalElements = data?.totalElements ?? 0;
+    const selectedPhoto = selectedPhotoIndex === null ? null : photos[selectedPhotoIndex] ?? null;
 
     const handleSelect = (photo: PhotoResponse) => {
         setSelectedIds((prev) => {
@@ -57,13 +58,19 @@ export function AlbumDetailDialog({ album, open, onClose }: AlbumDetailDialogPro
         setSelectionMode(false);
     };
 
+    const openPhoto = (photo: PhotoResponse) => {
+        const index = photos.findIndex((item) => item.id === photo.id);
+        if (index >= 0) setSelectedPhotoIndex(index);
+    };
+
     return (
         <>
             <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-                <DialogContent showCloseButton={false} className="flex h-[min(88vh,820px)] w-[calc(100vw-1.5rem)] max-w-6xl flex-col gap-0 overflow-hidden rounded-3xl border-[#d8eaf3] bg-[#f7fbfd] p-0 shadow-[0_28px_90px_rgba(38,83,112,0.2)] dark:border-white/10 dark:bg-[#10213e] sm:w-[calc(100vw-3rem)]">
+                <DialogContent showCloseButton={false} className="flex h-[min(92vh,960px)] w-[calc(100vw-1rem)] max-w-6xl flex-col gap-0 overflow-hidden rounded-3xl border-[#d8eaf3] bg-[#f7fbfd] p-0 shadow-[0_28px_90px_rgba(38,83,112,0.2)] dark:border-white/10 dark:bg-[#10213e] sm:w-[calc(100vw-2rem)]">
                     <DialogHeader className="shrink-0 border-b border-[#dcebf2] bg-white px-5 py-5 dark:border-white/10 dark:bg-[#172847] sm:px-7">
                         <div className="flex items-start justify-between gap-4">
                             <div className="min-w-0 pr-2">
+                                <Button variant="ghost" size="sm" className="-ml-2 mb-2 h-7 gap-1.5 px-2 text-xs text-muted-foreground hover:text-[#10264b] dark:hover:text-white" onClick={onClose} aria-label="Back to albums"><ArrowLeft className="size-3.5" />Back to albums</Button>
                                 <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#5599c2]">Photo album</p>
                                 <DialogTitle className="truncate text-2xl font-semibold tracking-[-0.04em] text-[#10264b] dark:text-white">{album.title}</DialogTitle>
                                 <p className="mt-1 text-sm text-muted-foreground">{totalElements.toLocaleString()} photo{totalElements !== 1 ? "s" : ""} in this album</p>
@@ -178,7 +185,7 @@ export function AlbumDetailDialog({ album, open, onClose }: AlbumDetailDialogPro
                                     selectedIds={selectedIds}
                                     onSelect={handleSelect}
                                     onOpen={(photo) => {
-                                        if (!selectionMode) setSelectedPhoto(photo);
+                                        if (!selectionMode) openPhoto(photo);
                                         else handleSelect(photo);
                                     }}
                                 />
@@ -215,7 +222,11 @@ export function AlbumDetailDialog({ album, open, onClose }: AlbumDetailDialogPro
             <PhotoDetailDialog
                 photo={selectedPhoto}
                 open={!!selectedPhoto}
-                onClose={() => setSelectedPhoto(null)}
+                onClose={() => setSelectedPhotoIndex(null)}
+                onPrevious={selectedPhotoIndex !== null && selectedPhotoIndex > 0 ? () => setSelectedPhotoIndex((index) => index === null ? null : index - 1) : undefined}
+                onNext={selectedPhotoIndex !== null && selectedPhotoIndex < photos.length - 1 ? () => setSelectedPhotoIndex((index) => index === null ? null : index + 1) : undefined}
+                currentIndex={selectedPhotoIndex ?? undefined}
+                totalPhotos={photos.length}
             />
 
             <AddPhotosDialog

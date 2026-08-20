@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Plus, FolderPlus, Trash2, Edit2, MoreHorizontal, Images } from "lucide-react";
 import { format } from "date-fns";
@@ -35,20 +36,19 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAlbums, useCreateAlbum, useDeleteAlbum, useUpdateAlbum } from "@/hooks/use-albums";
-import { AlbumDetailDialog } from "@/components/photos/album-detail-dialog";
 import type { AlbumResponse } from "@/lib/api";
 
 export default function AlbumsPage() {
     const [createOpen, setCreateOpen] = useState(false);
     const [editAlbum, setEditAlbum] = useState<AlbumResponse | null>(null);
     const [deleteAlbum, setDeleteAlbum] = useState<AlbumResponse | null>(null);
-    const [viewAlbum, setViewAlbum] = useState<AlbumResponse | null>(null);
     const [createTitle, setCreateTitle] = useState("");
     const [editTitle, setEditTitle] = useState("");
 
     const { data: albums, isLoading, isError, error, refetch, isRefetching } = useAlbums();
     const { mutate: createAlbum, isPending: creating } = useCreateAlbum();
     const { mutate: deleteAlbumMutation, isPending: deleting } = useDeleteAlbum();
+    const router = useRouter();
 
     const handleCreate = () => {
         if (!createTitle.trim()) return;
@@ -124,7 +124,7 @@ export default function AlbumsPage() {
                         <AlbumCard
                             key={album.id}
                             album={album}
-                            onView={() => setViewAlbum(album)}
+                            onView={() => router.push(`/albums/${album.id}`)}
                             onEdit={() => {
                                 setEditAlbum(album);
                                 setEditTitle(album.title);
@@ -194,14 +194,6 @@ export default function AlbumsPage() {
                 </AlertDialogContent>
             </AlertDialog>
 
-            {/* Album Detail */}
-            {viewAlbum && (
-                <AlbumDetailDialog
-                    album={viewAlbum}
-                    open={!!viewAlbum}
-                    onClose={() => setViewAlbum(null)}
-                />
-            )}
         </div>
     );
 }

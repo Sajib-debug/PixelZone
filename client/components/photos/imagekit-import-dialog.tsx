@@ -101,7 +101,7 @@ export function ImageKitImportDialog({ open, onClose }: ImageKitImportDialogProp
                 {/* Asset grid */}
                 <div className="min-h-0 flex-1 overflow-y-auto bg-[#f7fbfd] dark:bg-[#0d1d33]">
                     {isLoading ? (
-                        <div className="grid grid-cols-2 gap-3 p-4 sm:grid-cols-3 sm:p-5 md:grid-cols-4 lg:grid-cols-5">
+                        <div className="grid grid-cols-2 gap-3 p-4 sm:grid-cols-3 sm:p-5 md:grid-cols-4">
                             {Array.from({ length: 15 }).map((_, i) => (
                                 <Skeleton key={i} className="aspect-square rounded-md" />
                             ))}
@@ -120,7 +120,7 @@ export function ImageKitImportDialog({ open, onClose }: ImageKitImportDialogProp
                             </p>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-2 gap-3 p-4 sm:grid-cols-3 sm:p-5 md:grid-cols-4 lg:grid-cols-5">
+                        <div className="grid grid-cols-2 gap-3 p-4 sm:grid-cols-3 sm:p-5 md:grid-cols-4">
                             {filteredAssets.map((asset) => (
                                 <AssetCard
                                     key={asset.fileId}

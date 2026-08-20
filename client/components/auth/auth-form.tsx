@@ -84,7 +84,7 @@ export function AuthForm({ mode }: AuthFormProps) {
             <CardHeader className="space-y-3 px-7 pb-5 pt-8 text-center sm:px-9">
                 <div className="flex justify-center">
                     <div className="relative flex size-16 items-center justify-center overflow-hidden rounded-2xl bg-[#10264b] shadow-[0_12px_30px_rgba(16,38,75,0.2)]">
-                        <Image src="/logo.png" alt="PixelZone Logo" width={64} height={64} className="scale-[2.2] object-contain" />
+                        <Image src="/brand-mark.svg" alt="PixelZone logo mark" width={64} height={64} className="size-full object-contain" />
                     </div>
                 </div>
                 <CardTitle className="text-3xl font-semibold tracking-[-0.045em] text-[#10264b] dark:text-white">

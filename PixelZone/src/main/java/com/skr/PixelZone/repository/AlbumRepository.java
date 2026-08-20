@@ -1,6 +1,7 @@
 package com.skr.PixelZone.repository;
 
 import com.skr.PixelZone.entity.Album;
+import com.skr.PixelZone.entity.PhotoStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -18,9 +19,9 @@ public interface AlbumRepository extends JpaRepository<Album, UUID> {
 
     @Query("""
             SELECT COUNT(ap) FROM AlbumPhoto ap
-            WHERE ap.album.id = :albumId
+                WHERE ap.album.id = :albumId AND ap.photo.status = :status
             """)
-    long countPhotoByAlbumId(@Param("albumId") UUID albumId);
+            long countPhotoByAlbumId(@Param("albumId") UUID albumId, @Param("status") PhotoStatus status);
 
     @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query("update Album a set a.coverPhoto = null where a.coverPhoto.id = :photoId")

@@ -35,7 +35,7 @@ public class AlbumService {
     @Transactional(readOnly = true)
     public List<AlbumResponse> listAlbums(User user) {
         return albumRepository.findByUserIdOrderByUpdatedAtDesc(user.getId()).stream()
-                .map(album -> toAlbumResponse(album,albumRepository.countPhotoByAlbumId(album.getId())))
+                .map(album -> toAlbumResponse(album, albumRepository.countPhotoByAlbumId(album.getId(), PhotoStatus.ACTIVE)))
                 .toList();
     }
 
@@ -43,13 +43,13 @@ public class AlbumService {
     public AlbumResponse getAlbum(User user, UUID albumId) {
         Album album = getOwnedAlbum(user,albumId);
 
-        return toAlbumResponse(album,albumRepository.countPhotoByAlbumId(album.getId()));
+        return toAlbumResponse(album, albumRepository.countPhotoByAlbumId(album.getId(), PhotoStatus.ACTIVE));
     }
 
     @Transactional(readOnly = true)
     public PageResponse<PhotoResponse> getAlbumPhotos(User user, UUID albumId, Pageable pageable) {
         getOwnedAlbum(user,albumId);
-        Page<AlbumPhoto> page =albumPhotoRepository.findByAlbumIdAndUserId(albumId,user.getId(),pageable);
+        Page<AlbumPhoto> page = albumPhotoRepository.findByAlbumIdAndUserId(albumId, user.getId(), PhotoStatus.ACTIVE, pageable);
         List<PhotoResponse> photos = page.getContent().stream()
                 .map(AlbumPhoto :: getPhoto)
                 .map(photoService :: toPhotoResponse)
@@ -96,7 +96,7 @@ public class AlbumService {
 
         return toAlbumResponse(
                 albumRepository.save(album),
-                albumRepository.countPhotoByAlbumId(album.getId())
+                albumRepository.countPhotoByAlbumId(album.getId(), PhotoStatus.ACTIVE)
         );
     }
 

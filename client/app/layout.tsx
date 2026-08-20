@@ -11,6 +11,11 @@ export const metadata: Metadata = {
     template: "%s | PixelZone",
   },
   description: "A modern photo management and sharing platform.",
+  icons: {
+    icon: "/brand-mark.svg",
+    shortcut: "/brand-mark.svg",
+    apple: "/brand-mark.svg",
+  },
 };
 
 export default function RootLayout({

@@ -60,8 +60,8 @@ export function SidebarNav() {
     <Sidebar variant="inset">
       <SidebarHeader className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
         <Link href="/" className="flex w-full items-center gap-2.5 font-semibold">
-          <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-lg bg-[#10264b]">
-            <Image src="/logo.png" alt="PixelZone Logo" width={36} height={36} className="scale-[2.2] object-contain" />
+          <div className="relative size-9 shrink-0 overflow-hidden rounded-lg">
+            <Image src="/brand-mark.svg" alt="PixelZone logo mark" width={36} height={36} className="size-full object-contain" />
           </div>
           <span className="text-lg font-bold tracking-tight">PixelZone</span>
         </Link>

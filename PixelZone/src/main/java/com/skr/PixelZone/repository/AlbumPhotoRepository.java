@@ -2,6 +2,7 @@ package com.skr.PixelZone.repository;
 
 import com.skr.PixelZone.entity.Album;
 import com.skr.PixelZone.entity.AlbumPhoto;
+import com.skr.PixelZone.entity.PhotoStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,12 +20,13 @@ public interface AlbumPhotoRepository extends JpaRepository<AlbumPhoto, UUID> {
     @Query("""
             SELECT ap FROM AlbumPhoto ap
                         JOIN FETCH ap.photo p
-                                    WHERE ap.album.id = :albumId AND p.user.id = :userId
+                                    WHERE ap.album.id = :albumId AND p.user.id = :userId AND p.status = :status
                                                 ORDER BY ap.sortOrder ASC, ap.addedAt DESC
             """)
     Page<AlbumPhoto> findByAlbumIdAndUserId(
             @Param("albumId") UUID albumId,
             @Param("userId") UUID userId,
+            @Param("status") PhotoStatus status,
             Pageable pageable
     );
 

@@ -159,7 +159,8 @@ public class PhotoService {
 
     @Transactional
     public void archivePhoto(User user, List<UUID> photoIds) {
-        updatePhotoStatus(user,photoIds,PhotoStatus.ACTIVE,PhotoStatus.ARCHIVE,false);
+        List<Photo> photos = updatePhotoStatus(user, photoIds, PhotoStatus.ACTIVE, PhotoStatus.ARCHIVE, false);
+        photoRepository.saveAllAndFlush(photos);
     }
 
     @Transactional
@@ -173,6 +174,7 @@ public class PhotoService {
             photo.setStatus(PhotoStatus.TRASH);
             photo.setDeletedAt(Instant.now());
         }
+        photoRepository.saveAllAndFlush(photos);
     }
 
     @Transactional
@@ -190,6 +192,7 @@ public class PhotoService {
             photo.setStatus(PhotoStatus.ACTIVE);
             photo.setDeletedAt(null);
         }
+        photoRepository.saveAllAndFlush(photos);
     }
 
     @Transactional
@@ -218,7 +221,7 @@ public class PhotoService {
         permanentlyDeletePhotos(user,List.of(photoId));
     }
 
-    private void updatePhotoStatus(
+    private List<Photo> updatePhotoStatus(
             User user,
             List<UUID> photoIds,
             PhotoStatus requiredCurrentStatus,
@@ -230,9 +233,13 @@ public class PhotoService {
             if(requiredCurrentStatus != null && photo.getStatus() != requiredCurrentStatus) {
                 throw new BadRequestException("Photo must be " + requiredCurrentStatus.name().toLowerCase());
             }
+            if(newStatus != PhotoStatus.ACTIVE) {
+                albumRepository.clearCoverPhoto(photo.getId());
+            }
             photo.setStatus(newStatus);
             photo.setDeletedAt(setDeletedAt? Instant.now():null);
         }
+        return photos;
     }
 
     private List<Photo> loadOwnedPhotos(User user, List<UUID> photoIds) {

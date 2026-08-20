@@ -15,7 +15,7 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
                     </Link>
                     <Link href="/" aria-label="PixelZone home" className="flex items-center gap-2">
                         <span className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-lg bg-[#10264b]">
-                            <Image src="/logo.png" alt="PixelZone logo" width={36} height={36} className="scale-[2.2] object-contain" />
+                            <Image src="/brand-mark.svg" alt="PixelZone logo mark" width={36} height={36} className="size-full object-contain" />
                         </span>
                         <span className="text-sm font-semibold text-[#10264b]">PixelZone</span>
                     </Link>

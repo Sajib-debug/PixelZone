@@ -12,6 +12,7 @@ type PhotoGridProps = {
     selectedIds?: Set<string>;
     onSelect?: (photo: PhotoResponse) => void;
     onOpen?: (photo: PhotoResponse) => void;
+    layout?: "default" | "album";
 };
 
 export function PhotoGrid({
@@ -20,9 +21,10 @@ export function PhotoGrid({
     selectedIds = new Set(),
     onSelect,
     onOpen,
+    layout = "default",
 }: PhotoGridProps) {
     return (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+        <div className={layout === "album" ? "grid grid-cols-1 gap-5 md:grid-cols-2" : "grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"}>
             {photos.map((photo) => {
                 const isSelected = selectedIds.has(photo.id);
                 const isAiDerived = !!photo.aiTransformType;
@@ -31,7 +33,8 @@ export function PhotoGrid({
                     <div
                         key={photo.id}
                         className={cn(
-                            "group relative aspect-square cursor-pointer overflow-hidden rounded-xl bg-muted shadow-[0_4px_14px_rgba(38,83,112,0.08)] transition-shadow hover:shadow-[0_10px_28px_rgba(38,83,112,0.16)]",
+                            "group relative cursor-pointer overflow-hidden rounded-xl bg-muted shadow-[0_4px_14px_rgba(38,83,112,0.08)] transition-shadow hover:shadow-[0_10px_28px_rgba(38,83,112,0.16)]",
+                            layout === "album" ? "aspect-[4/3]" : "aspect-square",
                             isSelected && "ring-2 ring-primary ring-offset-2"
                         )}
                         onClick={() => {

@@ -8,7 +8,7 @@ import {
 import { toast } from "sonner";
 
 import { api, type AiTransformRequest, type PhotoStatus } from "@/lib/api";
-import { photoKeys, libraryKeys } from "@/lib/query-keys";
+import { albumKeys, photoKeys, libraryKeys } from "@/lib/query-keys";
 
 // ==================== List Photos ====================
 
@@ -60,6 +60,8 @@ export function useArchivePhotos() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: photoKeys.lists() });
             queryClient.invalidateQueries({ queryKey: photoKeys.details() });
+            queryClient.invalidateQueries({ queryKey: albumKeys.all });
+            queryClient.refetchQueries({ queryKey: photoKeys.lists(), type: "active" });
             toast.success("Photo(s) archived");
         },
 
@@ -80,6 +82,7 @@ export function useTrashPhotos() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: photoKeys.lists() });
             queryClient.invalidateQueries({ queryKey: photoKeys.details() });
+            queryClient.invalidateQueries({ queryKey: albumKeys.all });
             queryClient.invalidateQueries({ queryKey: libraryKeys.storage() });
             toast.success("Photo(s) moved to trash");
         },
@@ -101,6 +104,7 @@ export function useRestorePhotos() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: photoKeys.lists() });
             queryClient.invalidateQueries({ queryKey: photoKeys.details() });
+            queryClient.invalidateQueries({ queryKey: albumKeys.all });
             toast.success("Photo(s) restored");
         },
 
@@ -121,6 +125,7 @@ export function usePermanentDeletePhotos() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: photoKeys.lists() });
             queryClient.invalidateQueries({ queryKey: photoKeys.details() });
+            queryClient.invalidateQueries({ queryKey: albumKeys.all });
             queryClient.invalidateQueries({ queryKey: libraryKeys.storage() });
             toast.success("Photo(s) permanently deleted");
         },

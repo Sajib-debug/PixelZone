@@ -1,10 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import {
     Archive,
     ArchiveRestore,
+    ChevronLeft,
+    ChevronRight,
     Download,
     Info,
     Sparkles,
@@ -30,6 +32,10 @@ type PhotoDetailDialogProps = {
     photo: PhotoResponse | null;
     open: boolean;
     onClose: () => void;
+    onPrevious?: () => void;
+    onNext?: () => void;
+    currentIndex?: number;
+    totalPhotos?: number;
 };
 
 function formatBytes(bytes: number): string {
@@ -38,7 +44,7 @@ function formatBytes(bytes: number): string {
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-export function PhotoDetailDialog({ photo, open, onClose }: PhotoDetailDialogProps) {
+export function PhotoDetailDialog({ photo, open, onClose, onPrevious, onNext, currentIndex, totalPhotos }: PhotoDetailDialogProps) {
     const [showInfo, setShowInfo] = useState(false);
     const [aiOpen, setAiOpen] = useState(false);
 
@@ -46,6 +52,18 @@ export function PhotoDetailDialog({ photo, open, onClose }: PhotoDetailDialogPro
     const { mutate: trash, isPending: trashing } = useTrashPhotos();
     const { mutate: restore, isPending: restoring } = useRestorePhotos();
     const { mutate: permanentDelete, isPending: deleting } = usePermanentDeletePhotos();
+
+    useEffect(() => {
+        if (!open || (!onPrevious && !onNext)) return;
+
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === "ArrowLeft" && onPrevious) onPrevious();
+            if (event.key === "ArrowRight" && onNext) onNext();
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [open, onPrevious, onNext]);
 
     if (!photo) return null;
 
@@ -122,6 +140,11 @@ export function PhotoDetailDialog({ photo, open, onClose }: PhotoDetailDialogPro
                     <div className="flex min-h-0 flex-1 flex-col overflow-y-auto md:flex-row">
                         {/* Image */}
                         <div className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-[#0b1017] md:min-h-0">
+                            {onPrevious && (
+                                <Button variant="ghost" size="icon" className="absolute left-3 top-1/2 z-10 size-11 -translate-y-1/2 rounded-full bg-black/35 text-white hover:bg-black/60" onClick={onPrevious} aria-label="Previous photo">
+                                    <ChevronLeft className="size-6" />
+                                </Button>
+                            )}
                             <Image
                                 src={photo.url}
                                 alt={photo.fileName}
@@ -130,6 +153,14 @@ export function PhotoDetailDialog({ photo, open, onClose }: PhotoDetailDialogPro
                                 sizes="(max-width: 1024px) 100vw, 75vw"
                                 unoptimized
                             />
+                            {onNext && (
+                                <Button variant="ghost" size="icon" className="absolute right-3 top-1/2 z-10 size-11 -translate-y-1/2 rounded-full bg-black/35 text-white hover:bg-black/60" onClick={onNext} aria-label="Next photo">
+                                    <ChevronRight className="size-6" />
+                                </Button>
+                            )}
+                            {currentIndex !== undefined && totalPhotos !== undefined && (
+                                <div className="absolute bottom-4 left-1/2 z-10 -translate-x-1/2 rounded-full bg-black/55 px-3 py-1.5 text-xs font-medium text-white/90">{currentIndex + 1} / {totalPhotos}</div>
+                            )}
                         </div>
 
                         {/* Info panel */}
